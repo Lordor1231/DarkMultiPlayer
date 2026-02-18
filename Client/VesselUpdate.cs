@@ -54,8 +54,15 @@ namespace DarkMultiPlayer
                 angularVelocity[0] = updateVessel.angularVelocity.x;
                 angularVelocity[1] = updateVessel.angularVelocity.y;
                 angularVelocity[2] = updateVessel.angularVelocity.z;
-                //Flight state
-                flightState.CopyFrom(updateVessel.ctrlState);
+                //Flight state - EVA vessels can have a null ctrlState while still being physically active.
+                if (updateVessel.ctrlState != null)
+                {
+                    flightState.CopyFrom(updateVessel.ctrlState);
+                }
+                else
+                {
+                    flightState.CopyFrom(new FlightCtrlState());
+                }
                 actiongroupControls[0] = updateVessel.ActionGroups[KSPActionGroup.Gear];
                 actiongroupControls[1] = updateVessel.ActionGroups[KSPActionGroup.Light];
                 actiongroupControls[2] = updateVessel.ActionGroups[KSPActionGroup.Brakes];
@@ -95,7 +102,7 @@ namespace DarkMultiPlayer
                     orbit[5] = updateVessel.orbit.meanAnomalyAtEpoch;
                     orbit[6] = updateVessel.orbit.epoch;
                 }
-                sasEnabled = updateVessel.Autopilot.Enabled;
+                sasEnabled = updateVessel.Autopilot != null && updateVessel.Autopilot.Enabled;
                 if (sasEnabled)
                 {
                     autopilotMode = (int)updateVessel.Autopilot.Mode;
